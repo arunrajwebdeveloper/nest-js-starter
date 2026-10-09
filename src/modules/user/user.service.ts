@@ -45,7 +45,7 @@ export class UserService {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       id,
       { $set: updateUserDto },
-      { new: true },
+      { returnDocument: 'after' }, // Replaced { new: true }
     );
     return updatedUser;
   }
