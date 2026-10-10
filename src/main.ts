@@ -29,6 +29,11 @@ async function bootstrap() {
     }),
   );
 
+  // supported only in v12 so can remove helmet package
+  // app.useSecurityHeaders({
+  //   crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allows cross-origin asset sharing if needed
+  // });
+
   //Cookie Parsing Middleware (Pass an optional secret string for signed cookies)
   const COOKIE_SECRET = configService.get<string>('COOKIE_SECRET');
   app.use(cookieParser(COOKIE_SECRET));
