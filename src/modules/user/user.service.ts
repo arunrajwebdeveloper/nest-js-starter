@@ -9,7 +9,7 @@ import { Model, Types } from 'mongoose';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  create(createUserDto: CreateUserDto): Promise<User> {
     // for single data
     const user = new this.userModel(createUserDto);
     return user.save();
@@ -35,6 +35,9 @@ export class UserService {
 
   async findOne(id: string): Promise<(User & { _id: Types.ObjectId }) | null> {
     const user = await this.userModel.findById(id).lean().exec();
+    if (!user) {
+      throw new NotFoundException(`User with id "${id}" not found`);
+    }
     return user;
   }
 
@@ -42,19 +45,26 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<(User & { _id: Types.ObjectId }) | null> {
-    const updatedUser = await this.userModel.findByIdAndUpdate(
-      id,
-      { $set: updateUserDto },
-      { returnDocument: 'after' }, // Replaced { new: true }
-    );
+    const updatedUser = await this.userModel
+      .findByIdAndUpdate(
+        id,
+        { $set: updateUserDto },
+        { returnDocument: 'after' }, // Replaced { new: true }
+      )
+      .exec();
+
+    if (!updatedUser) {
+      throw new NotFoundException(`User with id "${id}" not found`);
+    }
     return updatedUser;
   }
 
   async remove(id: string): Promise<(User & { _id: Types.ObjectId }) | null> {
     const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
 
-    if (!deletedUser)
+    if (!deletedUser) {
       throw new NotFoundException(`User with id "${id}" not found`);
+    }
 
     return deletedUser;
   }
