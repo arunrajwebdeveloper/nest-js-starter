@@ -6,9 +6,10 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import helmet from 'helmet';
 import { json, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // The preferred NestJS way using ConfigService
   const configService = app.get(ConfigService);
